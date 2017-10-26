@@ -40,31 +40,11 @@ static String path1 = "school/section/secNo";
 		
 		String path = "school/section/secNo"; 
 		System.out.println(path.substring(path.lastIndexOf("section") + "section".length()));
-		System.out.println(listOf(path, emp, obj));
+		System.out.println(extractObjectPropertyValue(path, emp, obj));
 		
 	}
-
-
-	public static <T> void listOf1(int i, T emp, List<Object> param) {
-		T obj = emp; 
-		String splits[] = path1.split("/");
-		for(; i < 3;) {
-			if(obj instanceof Collection) {
-				for(T x : (Collection<T>)obj) {
-				i++;
-						x = getPropertyValue(x, splits[i]);
-						if(x != null && (x instanceof Boolean || x instanceof String)) 
-							param.add(x);
-						if(i < 2)	
-							listOf1(i, x, param);
-						else i = 0;
-					}
-			} else 	
-				obj = getPropertyValue(obj, splits[i]);
-		}
-	}
 	
-	public static <T> List<Object> listOf(String path, T emp, List<Object> param) {
+	public static <T> List<Object> extractObjectPropertyValue(String path, T emp, List<Object> param) {
 		T obj = emp; 
 		String splits[] = path.split("/");
 		for(String token : splits) {
@@ -74,7 +54,7 @@ static String path1 = "school/section/secNo";
 					if(x != null && (x instanceof Boolean || x instanceof String)) 
 						param.add(x);
 					if((path.lastIndexOf(token) + token.length() + 1) <= path.length())
-						listOf(path.substring(path.lastIndexOf(token) + token.length() + 1), x, param);
+						extractObjectPropertyValue(path.substring(path.lastIndexOf(token) + token.length() + 1), x, param);
 				}
 			} else  {
 				obj = getPropertyValue(obj, token);
@@ -82,7 +62,7 @@ static String path1 = "school/section/secNo";
 					param.add(obj);
 					return param;
 				} else {
-					listOf(path.substring(path.lastIndexOf(token) + token.length() + 1), obj, param);
+					extractObjectPropertyValue(path.substring(path.lastIndexOf(token) + token.length() + 1), obj, param);
 				}
 				return param;
 			} 
