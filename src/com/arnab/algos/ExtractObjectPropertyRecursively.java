@@ -11,9 +11,19 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 public class ExtractObjectPropertyRecursively {
 
-static String path1 = "school/section/secNo";
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	
+	public static <T> void main(String[] args) {
+		
+		try{
+		
+		String s = new String("hello");
+		s.substring(0, 20);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
 
 		boolean f1 = false;
 		boolean f2 = false;
@@ -35,34 +45,57 @@ static String path1 = "school/section/secNo";
 		List<School> lstSch = new ArrayList<School>();
 		lstSch.add(sc1); lstSch.add(sc2); lstSch.add(sc3);
 		Employee emp = new Employee("123", lstSch);
-		
-		List<Object> obj = new ArrayList<Object>();
-		
-		String path = "school/section/secNo"; 
-		System.out.println(path.substring(path.lastIndexOf("section") + "section".length()));
-		System.out.println(extractObjectPropertyValue(path, emp, obj));
+			
+		String path = "school/section/subSection/subSecNo"; 
+		List<?> value = extractObjectPropertyValue(path, emp, new ArrayList<>());
+		System.out.println(value);
 		
 	}
 	
-	public static <T> List<Object> extractObjectPropertyValue(String path, T emp, List<Object> param) {
-		T obj = emp; 
+	/**
+	 * Recursively parses the object and extracts the property value from the given path. 
+	 * Works well for searching primitive/Wrapper/Object type.
+	 * The leaf node can be of any type including {Primitive/Wrapper/Arrays/Collection/Object} type.
+	 * </br>Collects all the matching property value at the path specified in the input parameter.  
+	 * </br>How it works?
+	 * </br>class Employee {
+	 * </br>	String name;
+	 * </br>	List<Roll> roll;
+	 * </br> 	static class Roll {
+	 * </br> 		String rollNo;
+	 * </br>	}
+	 * </br>}
+	 * </br> Input: Provide path as roll/rollNo.
+	 * </br> output : Bunch of all the rollNo across the object.
+	 * 
+	 * @param path - give the location of the property in class template. 
+	 * @param objToValidate
+	 * @param param List of values fetched from the specified path from the object.
+	 * @return {@code List<T> of objects}
+	 */
+	public static <T> List<? super T> extractObjectPropertyValue(String path, T objToValidate, List<? super T> param) {
+		T obj = objToValidate; 
 		String splits[] = path.split("/");
 		for(String token : splits) {
 			if(obj instanceof Collection) {
 				for(T x : (Collection<T>)obj) {
 					x = getPropertyValue(x, token);
-					if(x != null && (x instanceof Boolean || x instanceof String)) 
+					if(null == x) 
+						continue;
+					if(x != null && (x instanceof Boolean || x instanceof String || splits.length == 1)) 
 						param.add(x);
-					if((path.lastIndexOf(token) + token.length() + 1) <= path.length())
-						extractObjectPropertyValue(path.substring(path.lastIndexOf(token) + token.length() + 1), x, param);
+					if((path.indexOf(token) + token.length() + 1) <= path.length())
+						extractObjectPropertyValue(path.substring(path.indexOf(token) + token.length() + 1), x, param);
 				}
 			} else  {
 				obj = getPropertyValue(obj, token);
+				if(null == obj) 
+					continue;
 				if(obj instanceof String || obj instanceof Boolean) {
 					param.add(obj);
 					return param;
 				} else {
-					extractObjectPropertyValue(path.substring(path.lastIndexOf(token) + token.length() + 1), obj, param);
+					extractObjectPropertyValue(path.substring(path.indexOf(token) + token.length() + 1), obj, param);
 				}
 				return param;
 			} 
@@ -81,10 +114,9 @@ static String path1 = "school/section/secNo";
 		} catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			System.out.println(e);
 		}
-		System.out.println(value);
 		return (T) value;
 	}
-	
+
 }
 
 class Employee {
@@ -104,6 +136,10 @@ class Employee {
 	}
 	public void setSchool(List<School> school) {
 		this.school = school;
+	}
+	@Override
+	public String toString() {
+		return "[id:]" + id + " [school:]" + school.toString();
 	}
 }
 class School {
@@ -131,13 +167,13 @@ class School {
 	public void setSection(List<Section> section) {
 		this.section = section;
 	}
-	
+	@Override
+	public String toString() {
+		return " [scId:]" + scId + " [scName:]" + scName + " [section:]" + section.toString();
+	}
 }
 class Section {
 	private String secNo;
-	/*Section(String sec) {
-		secNo = sec;
-	}*/
 	private List<SubSection> subSection;
 	Section(String sec, List<SubSection> subSec) {
 		secNo = sec;
@@ -155,7 +191,10 @@ class Section {
 	public void setSubSec(List<SubSection> subSec) {
 		this.subSection = subSec;
 	}
-	
+	@Override
+	public String toString() {
+		return " [secNo:]" + secNo + " [subSection:]" + subSection.toString();
+	}
 }
 class SubSection {
 	private String subSecNo;
@@ -168,7 +207,9 @@ class SubSection {
 	public void setSubSecNo(String subSecNo) {
 		this.subSecNo = subSecNo;
 	}
-	
-	
+	@Override
+	public String toString() {
+		return " [subSecNo:]" + subSecNo;
+	}
 }
 
