@@ -69,8 +69,14 @@ public class HappyParent {
 
 	public static void main(String[] args) {
 
-		Parent ps = new Parent(13);
+		Parent ps = new Parent(8);
 		ps.addChildren(0, 1);
+		ps.addChildren(1, 2);
+		ps.addChildren(1, 3);
+		ps.addChildren(3, 4);
+		ps.addChildren(3, 5);
+		ps.addChildren(3, 6);
+		/*ps.addChildren(0, 1);
 		ps.addChildren(0, 2);
 		
 		ps.addChildren(1, 3);
@@ -84,7 +90,7 @@ public class HappyParent {
 		ps.addChildren(6, 9);
 		ps.addChildren(6, 10);
 		ps.addChildren(6, 11);
-		ps.addChildren(6, 12);
+		ps.addChildren(6, 12);*/
 		
 		ps.happyParent(0);
 		

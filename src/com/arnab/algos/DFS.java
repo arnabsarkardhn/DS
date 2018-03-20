@@ -22,8 +22,8 @@ public class DFS {
 	}
 	
 	public void dfsTraverse(int start) {
+
 		boolean visited[] = new boolean[v];
-		
 		traverse(start, visited);
 	}
 	
